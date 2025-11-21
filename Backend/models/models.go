@@ -8,14 +8,13 @@ import (
 )
 
 type User struct {
-	ID        uuid.UUID `gorm:"type:uuid;primaryKey"`
-	Email     string    `gorm:"unique"`
-	Name      string    `json:"name"`
-	Password  string    `json:"-"`
+	ID        string `gorm:"type:uuid;primaryKey"`
+	Email     string `json:"email" gorm:"unique" validate:"required"`
+	Name      string `json:"name" validate:"required"`
+	Role      string `json:"role" validate:"required"`
+	Password  string `json:"password" validate:"required"`
 	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt gorm.DeletedAt `gorm:"index"`
-	QRCodes   []QRCode       `gorm:"foreignKey:UserID"`
+	QRCodes   []QRCode `gorm:"foreignKey:UserID"`
 }
 
 type QRCode struct {
@@ -34,7 +33,7 @@ type QRCode struct {
 
 type QRCodeAnalytics struct {
 	ID         uuid.UUID `gorm:"type:uuid;primaryKey"`
-	QRCodeID   uuid.UUID
+	QRCodeID   string
 	QRCode     QRCode `gorm:"foreignKey:QRCodeID"`
 	UserAgent  string
 	DeviceType string

@@ -1,6 +1,7 @@
 package dbconn
 
 import (
+	"DynamicQRBackend/models"
 	"fmt"
 	"log"
 
@@ -9,7 +10,7 @@ import (
 )
 
 const (
-	host     = "host.docker.internal"
+	host     = "localhost"
 	port     = 4050
 	user     = "postgres"
 	password = "ZeesHANAamir@931360"
@@ -25,5 +26,5 @@ func DBconn() {
 		log.Fatal(err)
 	}
 	DB = db
-	db.AutoMigrate()
+	db.AutoMigrate(&models.QRCode{}, &models.QRCodeAnalytics{}, &models.User{})
 }
