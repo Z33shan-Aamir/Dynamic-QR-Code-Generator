@@ -1,6 +1,9 @@
 package handlers
 
 import (
+	"DynamicQRBackend/dbconn"
+	"DynamicQRBackend/models"
+	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -35,4 +38,35 @@ func GenerateToken(userID string) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(secretkey)
+}
+
+// gets the cookie and then returns user id or error if invalid
+func GetUserIDFromToken(cookie string) (string, error) {
+	token, err := jwt.Parse(cookie, func(t *jwt.Token) (any, error) {
+		return secretkey, nil
+	})
+
+	if err != nil {
+		return "", errors.New("could not parse the token")
+	}
+	if !token.Valid {
+		return "", errors.New("invalid token")
+	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", errors.New("invalid claims")
+	}
+
+	user_id, ok := claims["user_id"]
+	if !ok {
+		return "", errors.New("could not determine user id from token")
+	}
+
+	var user models.User
+	if err := dbconn.DB.First(&user, "id = ?", user_id).Error; err != nil {
+		return "", err
+	}
+
+	return user.ID, nil
 }

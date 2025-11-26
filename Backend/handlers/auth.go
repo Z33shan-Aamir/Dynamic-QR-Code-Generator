@@ -52,7 +52,7 @@ func Signup(c *fiber.Ctx) error {
 		})
 	}
 
-	user.CreatedAt = time.Now()
+	// user.CreatedAt = time.Now()
 	user.Password = string(hashed)
 	user.ID = uuid.NewString()
 	user.Role = "user"
