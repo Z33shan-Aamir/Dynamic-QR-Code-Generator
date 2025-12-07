@@ -18,14 +18,14 @@ type User struct {
 }
 
 type QRCode struct {
-	ID          string `gorm:"primaryKey" validate:"required"` // Will contain a unique nano id because they are small and url friendly
+	ID          string `gorm:"primaryKey;->;<-:create" validate:"required"` // Will contain a unique nano id because they are small and url friendly
 	Name        string `json:"name" validate:"required"`
 	Description string `json:"description"`
 
 	// qrcode data
 	DestinationURL string `json:"destination_url" validate:"required"`
 	Active         bool
-	QRCodeImage    []byte `gorm:"type:bytea" validate:"required"` //
+	// QRCodeImage    []byte `gorm:"type:bytea" validate:"required"` //
 
 	// time stamps
 	CreatedAt time.Time
@@ -33,7 +33,7 @@ type QRCode struct {
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 
 	// the relation ship data
-	UserID    string            `json:"userid" validate:"required"`
+	UserID    string            `json:"userid" gorm:"->;<-:create" validate:"required"`
 	User      User              `gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE,OnUpdate:CASCADE;"`
 	Analytics []QRCodeAnalytics `gorm:"foreignKey:QRCodeID"`
 }
