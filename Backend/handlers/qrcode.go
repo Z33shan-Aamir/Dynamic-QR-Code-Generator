@@ -39,15 +39,14 @@ func CreateQRCode(c *fiber.Ctx) error {
 		})
 	}
 
-	cookie := c.Cookies("jwt")
-
 	// also checks if it exists in DB
-	user_id, err := GetUserIDFromToken(cookie)
+	user_id, err := CurrentUserID(c)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"error": err.Error(),
+		return c.JSON(fiber.Map{
+			"error": err,
 		})
 	}
+
 	if _, err := url.Parse(reqQRCode.DestinationURL); err != nil {
 		return c.Status(400).JSON(fiber.Map{
 			"error": "invalid destination url",
@@ -88,13 +87,11 @@ func UpdateQRCode(c *fiber.Ctx) error {
 		})
 	}
 
-	cookie := c.Cookies("jwt")
-
 	// also checks if it exists in DB
-	user_id, err := GetUserIDFromToken(cookie)
+	user_id, err := CurrentUserID(c)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"error": err.Error(),
+		return c.JSON(fiber.Map{
+			"error": err,
 		})
 	}
 
@@ -131,14 +128,13 @@ func DeleteQRCode(c *fiber.Ctx) error {
 	}
 	var qrCodeID string = c.Params("nanoid")
 
-	cookie := c.Cookies("jwt")
-
-	user_id, err := GetUserIDFromToken(cookie)
+	user_id, err := CurrentUserID(c)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{
-			"error": err.Error(),
+		return c.JSON(fiber.Map{
+			"error": err,
 		})
 	}
+
 	var QRCode models.QRCode
 	results := dbconn.DB.Where("id = ? AND user_id = ?", qrCodeID, user_id).Delete(&QRCode)
 

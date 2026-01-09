@@ -17,7 +17,9 @@ var secretkey = []byte("j4hb23jh4bjhb234hjb1khg3v4132123!@#!@#hbvm1cv23b!M@#Vnm"
 var validate = validator.New()
 
 type MyClaims struct {
-	UserID string `json:"user_id"`
+	UserID   string `json:"user_id"`
+	Plan     string `json:"plan"`     // free, strandard pro
+	UserType string `json:"usertype"` // tells if he/she is a user or admin
 	jwt.RegisteredClaims
 }
 
@@ -119,8 +121,8 @@ func Login(c *fiber.Ctx) error {
 		Value:    token,
 		Expires:  time.Now().Add(time.Hour * 24),
 		HTTPOnly: true,
+		SameSite: "Lax",
 	}
-	cookie.SameSite = "Lax"
 
 	// creates a cookie with the above data
 	c.Cookie(&cookie)
@@ -134,29 +136,22 @@ func Login(c *fiber.Ctx) error {
 // checks if user is loged in
 
 func User(c *fiber.Ctx) error {
-	cookie := c.Cookies("jwt")
+	// cookie := c.Cookies("jwt")
 
-	token, err := jwt.Parse(cookie, func(t *jwt.Token) (any, error) {
-		return secretkey, nil
-	})
+	// token, err := jwt.Parse(cookie, func(t *jwt.Token) (any, error) {
+	// 	return secretkey, nil
+	// })
 
-	if err != nil || !token.Valid {
-		return c.Status(401).JSON(fiber.Map{
-			"error": "invalid or expired token",
-		})
-	}
+	// if err != nil || !token.Valid {
+	// 	return c.Status(401).JSON(fiber.Map{
+	// 		"error": "invalid or expired token",
+	// 	})
+	// }
 
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"message": "unauthenticated",
-		})
-	}
-
-	userID, ok := claims["user_id"]
-	if !ok {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"message": "unauthenticated",
+	userID, err := CurrentUserID(c)
+	if err != nil {
+		return c.JSON(fiber.Map{
+			"error": err,
 		})
 	}
 

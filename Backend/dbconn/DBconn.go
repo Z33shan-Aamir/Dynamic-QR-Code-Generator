@@ -11,10 +11,10 @@ import (
 
 const (
 	host     = "localhost"
-	port     = 4050
+	port     = 5432
 	user     = "postgres"
-	password = "ZeesHANAamir@931360"
-	dbname   = "movie-data-provider"
+	password = "Zeeshan@123"
+	dbname   = "dynamic-qr-code"
 )
 
 var dsn string = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Karachi", host, port, user, password, dbname)

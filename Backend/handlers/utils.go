@@ -6,7 +6,9 @@ import (
 	"errors"
 	"time"
 
+	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v5"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -29,7 +31,9 @@ func CompareHash(hashed_password, password string) bool {
 
 func GenerateToken(userID string) (string, error) {
 	claims := MyClaims{
-		UserID: userID,
+		UserID:   userID,
+		UserType: "user",
+		Plan:     "free",
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(24 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -38,6 +42,17 @@ func GenerateToken(userID string) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(secretkey)
+}
+
+// gets the userID via the http cookie
+// (which was included in the request) contains the token
+func CurrentUserID(c *fiber.Ctx) (string, error) {
+	token := c.Locals("usertoken").(*jwt.Token)
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		return "", errors.New("could not parse token")
+	}
+	return claims["user_id"].(string), nil
 }
 
 // gets the cookie and then returns user id or error if invalid
