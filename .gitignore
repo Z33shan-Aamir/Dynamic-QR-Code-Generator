@@ -24,7 +24,7 @@ dist-ssr
 *.sw?
 
 
-
+*.env
 dummy
 braindump.md
 ProjectNotes.md
