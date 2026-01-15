@@ -4,20 +4,21 @@ import (
 	"DynamicQRBackend/models"
 	"fmt"
 	"log"
+	"os"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
-const (
-	host     = "localhost"
-	port     = 5432
-	user     = "postgres"
-	password = "Zeeshan@123"
-	dbname   = "dynamic-qr-code"
+var (
+	host     string = os.Getenv("DB_HOST")
+	user     string = os.Getenv("DB_USER")
+	password string = os.Getenv("DB_PASSWORD")
+	dbname   string = os.Getenv("DB_NAME")
+	port     string = os.Getenv("DB_PORT")
 )
 
-var dsn string = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Karachi", host, port, user, password, dbname)
+var dsn string = fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Karachi", host, port, user, password, dbname)
 var DB *gorm.DB
 
 func DBconn() {

@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   backend:
     build: ./Backend
@@ -7,8 +5,28 @@ services:
     ports:
       - "3080:3080"
     volumes:
-      - ./Backend:/app          # Syncs your local Go code to container
-      - /app/tmp                # Ignore Air's temp build folder
+      - ./Backend:/app
+      - /app/tmp
+    networks:
+      - app-network
+    environment:
+      - DB_HOST=postgresql      # Changed to match the service name below
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=Zeeshan@123
+      - DB_NAME=dynamic-qr-code-db
+
+  postgresql:
+    image: postgres:16
+    container_name: dynamic-qr-code-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=Zeeshan@123
+      - POSTGRES_DB=dynamic-qr-code-db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data 
     networks:
       - app-network
 
@@ -16,12 +34,12 @@ services:
     build: ./frontend
     container_name: react-app
     ports:
-      - "5173:5173"             # Map host 8080 to container 3000 (standard React port)
+      - "5173:5173"
     volumes:
-      - ./frontend:/app         # Syncs your local React code
-      - /app/node_modules       # PREVENTS your local node_modules from breaking the container
+      - ./frontend:/app
+      - /app/node_modules
     environment:
-      - CHOKIDAR_USEPOLLING=true # Essential for React hot-reload on some OS (Windows/WSL)
+      - CHOKIDAR_USEPOLLING=true
     depends_on:
       - backend
     networks:
@@ -30,3 +48,7 @@ services:
 networks:
   app-network:
     driver: bridge
+
+# THIS IS THE SECTION YOU NEED TO ADD:
+volumes:
+  postgres_data:
