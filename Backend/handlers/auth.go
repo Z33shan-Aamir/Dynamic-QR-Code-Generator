@@ -132,38 +132,3 @@ func Login(c *fiber.Ctx) error {
 	})
 
 }
-
-// checks if user is loged in
-
-func User(c *fiber.Ctx) error {
-	// cookie := c.Cookies("jwt")
-
-	// token, err := jwt.Parse(cookie, func(t *jwt.Token) (any, error) {
-	// 	return secretkey, nil
-	// })
-
-	// if err != nil || !token.Valid {
-	// 	return c.Status(401).JSON(fiber.Map{
-	// 		"error": "invalid or expired token",
-	// 	})
-	// }
-
-	userID, err := CurrentUserID(c)
-	if err != nil {
-		return c.JSON(fiber.Map{
-			"error": err,
-		})
-	}
-
-	var user models.User
-	if err := dbconn.DB.First(&user, "id = ?", userID).Error; err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"message": "user not found",
-		})
-	}
-
-	return c.JSON(fiber.Map{
-		"message": "authenticated",
-		"user":    user,
-	})
-}

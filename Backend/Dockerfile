@@ -1,15 +1,16 @@
-#build stage
-FROM golang:1.25.3-alpine AS builder
+FROM golang:1.25-alpine
+
 WORKDIR /app
+
+# Install Air for hot reload
+RUN go install github.com/air-verse/air@latest
+
 COPY go.mod go.sum ./
-COPY . .
 RUN go mod download
-RUN go build -o dynamic-qr-code-backend .
 
+COPY . .
 
-#final stage
-FROM alpine:latest
-WORKDIR /app
-COPY --from=builder /app/dynamic-qr-code-backend .
+# We do NOT run "go build" here. We let Air handle that.
 EXPOSE 3080
-CMD [ "./dynamic-qr-code-backend" ]
+
+CMD ["air"]

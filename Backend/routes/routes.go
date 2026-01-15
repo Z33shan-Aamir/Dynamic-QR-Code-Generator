@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-var secretkey = []byte("j4hb23jh4bjhb234hjb1khg3v4132123!@#!@#hbvm1cv23b!M@#Vnm")
+var secretkey = []byte("sesyt7yZE5ImLLVCgDp3sefdSc4aYXQWhwgllMOd8Mo5xDep2U4U1EElHI1u+0c0gjZ+CG0w/COne+dHX5AArQ==")
 
 func SetupRoutes(app *fiber.App) {
 

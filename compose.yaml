@@ -6,13 +6,22 @@ services:
     container_name: go-backend
     ports:
       - "3080:3080"
+    volumes:
+      - ./Backend:/app          # Syncs your local Go code to container
+      - /app/tmp                # Ignore Air's temp build folder
     networks:
       - app-network
+
   frontend:
-    build: ./Frontend
+    build: ./frontend
     container_name: react-app
     ports:
-      - "8080:80"
+      - "5173:5173"             # Map host 8080 to container 3000 (standard React port)
+    volumes:
+      - ./frontend:/app         # Syncs your local React code
+      - /app/node_modules       # PREVENTS your local node_modules from breaking the container
+    environment:
+      - CHOKIDAR_USEPOLLING=true # Essential for React hot-reload on some OS (Windows/WSL)
     depends_on:
       - backend
     networks:
@@ -20,4 +29,4 @@ services:
 
 networks:
   app-network:
-    drive: bridge
+    driver: bridge
